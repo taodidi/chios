@@ -20,7 +20,7 @@ function deepMergeStart(val1: any, val2: any): any {
   } else if (typeof val2 !== 'undefined') {
     return val2
   } else if (isPlainObject(val1)) {
-    deepMerge(val1)
+    return deepMerge(val1)
   } else {
     return val1
   }
@@ -60,6 +60,5 @@ export default function mergeConfig(
     const stratFun = strats[key] || defaultStrat
     config[key] = stratFun(config1[key], config2![key])
   }
-  console.log(1111)
   return config
 }

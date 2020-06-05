@@ -2,6 +2,9 @@ import { isPlainObject, deepMerge } from './utils'
 import { Method } from '../types'
 
 function normalizeHeaderName(headers: any, normalizedName: string): any {
+  if (!headers) {
+    return
+  }
   Object.keys(headers).forEach(name => {
     // 设置了'Content-Type'但大小写不规范
     if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {

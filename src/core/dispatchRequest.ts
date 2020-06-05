@@ -1,8 +1,8 @@
 import { ChiosRequestConfig, ChiosResponse, ChiosPromise } from '../types/index'
 import { xhr } from '../core/xhr'
 import { buildUrl } from '../helpers/url'
-import { transformRequest, transformResponse } from '../helpers/data'
-import { processHeaders, flattenHeaders } from '../helpers/headers'
+import { flattenHeaders } from '../helpers/headers'
+import transform from './transform'
 
 export default function dispatchRequest(config: ChiosRequestConfig): ChiosPromise {
   processConfig(config)
@@ -13,8 +13,7 @@ export default function dispatchRequest(config: ChiosRequestConfig): ChiosPromis
 
 function processConfig(config: ChiosRequestConfig): void {
   config.url = transformUrl(config)
-  config.headers = transformHeaders(config)
-  config.data = transformRequestData(config)
+  config.data = transform(config.data, config.headers, config.transformRequest)
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
@@ -24,20 +23,8 @@ function transformUrl(config: ChiosRequestConfig): string {
   return buildUrl(url!, params)
 }
 
-// 将普通对象转为JSON字符串
-function transformRequestData(config: ChiosRequestConfig): any {
-  const { data } = config
-  return transformRequest(data)
-}
-
-// 兼容头信息
-function transformHeaders(config: ChiosRequestConfig): any {
-  const { headers = {}, data } = config
-  return processHeaders(headers, data)
-}
-
 // 处理响应数据
 function transformResponseData(res: ChiosResponse): ChiosResponse {
-  res.data = transformResponse(res.data)
+  res.data = transform(res.data, res.config.headers, res.config.transformResponse)
   return res
 }

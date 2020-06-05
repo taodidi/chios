@@ -43,7 +43,6 @@ export default class Chios {
 
     // 合并config对象
     config = mergeConfig(this.defaults, config)
-
     // 拦截器执行链条
     const chain: Array<PromiseChain<any>> = [
       {

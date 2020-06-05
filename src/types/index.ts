@@ -42,6 +42,8 @@ export interface ChiosError extends Error {
   code?: string
   request?: any
   response?: ChiosResponse
+  transformRequest?: ChiosTransformer | ChiosTransformer[]
+  transformResponse?: ChiosTransformer | ChiosTransformer[]
 }
 
 export interface Chios {
@@ -84,4 +86,8 @@ export interface ResolvedFn<T> {
 
 export interface RejectedFn {
   (error: any): any
+}
+
+export interface ChiosTransformer {
+  (data: any, header?: any): any
 }
