@@ -44,9 +44,5 @@ chios({
     console.log(res)
   })
   .catch((e: ChiosError) => {
-    console.log(e.message)
-    console.log(e.config)
-    console.log(e.code)
-    console.log(e.request)
-    console.log(e.isChiosError)
+    console.log(e)
   })

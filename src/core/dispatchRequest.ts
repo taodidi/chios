@@ -5,6 +5,7 @@ import { flattenHeaders } from '../helpers/headers'
 import transform from './transform'
 
 export default function dispatchRequest(config: ChiosRequestConfig): ChiosPromise {
+  throwIfCancellationRequested(config)
   processConfig(config)
   return xhr(config).then(res => {
     return transformResponseData(res)
@@ -27,4 +28,11 @@ function transformUrl(config: ChiosRequestConfig): string {
 function transformResponseData(res: ChiosResponse): ChiosResponse {
   res.data = transform(res.data, res.config.headers, res.config.transformResponse)
   return res
+}
+
+// 如果canceler已经触发则直接返回Cancel实例
+function throwIfCancellationRequested(config: ChiosRequestConfig): void {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested()
+  }
 }

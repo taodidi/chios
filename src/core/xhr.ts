@@ -14,6 +14,19 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
     if (timeout) {
       request.timeout = timeout
     }
+    // 错误处理
+    request.onerror = () => {
+      reject(createError('Network Error', config, null, request))
+    }
+    // 响应超时
+    request.ontimeout = () => {
+      reject(
+        createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
+      )
+    }
+
+    // 设置异步请求
+    request.open(method.toLocaleUpperCase(), url!, true)
     // 监听xhr状态
     request.onreadystatechange = () => {
       if (request.readyState !== 4) {
@@ -39,18 +52,6 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
       // 处理响应
       handleResponse(response)
     }
-    // 错误处理
-    request.onerror = () => {
-      reject(createError('Network Error', config, null, request))
-    }
-    // 响应超时
-    request.ontimeout = () => {
-      reject(
-        createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
-      )
-    }
-
-    request.open(method.toLocaleUpperCase(), url!, true)
     // 设置请求头
     Object.keys(headers).forEach(key => {
       if (data === null && key.toLowerCase() === 'content-type') {
@@ -59,6 +60,14 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
         request.setRequestHeader(key, headers[key])
       }
     })
+
+    // 取消发送请求
+    if (config.cancelToken) {
+      config.cancelToken.promise.then(reason => {
+        request.abort()
+        reject(reason)
+      })
+    }
     // 发送数据
     request.send(data)
 

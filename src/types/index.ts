@@ -13,7 +13,7 @@ export type Method =
   | 'PUT'
   | 'patch'
   | 'PATCH'
-
+// request请求配置接口
 export interface ChiosRequestConfig {
   url?: string
   method?: Method
@@ -22,9 +22,13 @@ export interface ChiosRequestConfig {
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?: number
+  transformRequest?: ChiosTransformer | ChiosTransformer[]
+  transformResponse?: ChiosTransformer | ChiosTransformer[]
+  cancelToken?: CancelToken
   [propName: string]: any
 }
 
+// response响应数据接口
 export interface ChiosResponse<T = any> {
   data: T
   status: number
@@ -36,16 +40,16 @@ export interface ChiosResponse<T = any> {
 
 export interface ChiosPromise<T = any> extends Promise<ChiosResponse<T>> {}
 
+// 错误信息接口
 export interface ChiosError extends Error {
   config: ChiosRequestConfig
   isChiosError: boolean
   code?: string
   request?: any
   response?: ChiosResponse
-  transformRequest?: ChiosTransformer | ChiosTransformer[]
-  transformResponse?: ChiosTransformer | ChiosTransformer[]
 }
 
+// Chios方法集合类接口
 export interface Chios {
   defaults: ChiosRequestConfig
   interceptors: {
@@ -75,19 +79,64 @@ export interface ChiosInstance extends Chios {
   <T = any>(url: string, config?: ChiosRequestConfig): ChiosPromise<T>
 }
 
+export interface ChiosStatic extends ChiosInstance {
+  create(config?: ChiosRequestConfig): ChiosInstance
+  CancelToken: CancelTokenStatic
+  Cancel: CancelStatic
+  isCancel: (value: any) => boolean
+}
+
+// 拦截器管理类接口
 export interface ChiosInterceptorManager<T> {
   use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number
   eject(id: number): void
 }
 
+// 拦截器处理函数
 export interface ResolvedFn<T> {
   (val: T): T | Promise<T>
 }
 
+// 拦截器错误处理函数
 export interface RejectedFn {
   (error: any): any
 }
 
+// 请求响应配置处理函数接口
 export interface ChiosTransformer {
   (data: any, header?: any): any
+}
+
+// 取消请求实例接口
+export interface CancelToken {
+  reason?: Cancel
+  promise: Promise<Cancel>
+  throwIfRequested(): void
+}
+
+// 取消请求执行函数接口
+export interface Canceler {
+  (message?: string): void
+}
+
+export interface CancelExecutor {
+  (cancel: Canceler): void
+}
+
+export interface CancelTokenSource {
+  token: CancelToken
+  cancel: Canceler
+}
+
+export interface CancelTokenStatic {
+  new (executor: CancelExecutor): CancelToken
+  source(): CancelTokenSource
+}
+
+export interface Cancel {
+  message?: string
+}
+
+export interface CancelStatic {
+  new (message: string): Cancel
 }

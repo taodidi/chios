@@ -3,7 +3,7 @@ import { ChiosTransformer } from '../types'
 export default function transform(
   data: any,
   headers: any,
-  transformFns: ChiosTransformer | ChiosTransformer[]
+  transformFns?: ChiosTransformer | ChiosTransformer[]
 ): any {
   if (!transformFns) {
     return data
