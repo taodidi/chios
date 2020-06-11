@@ -4,9 +4,17 @@ import { createError } from '../helpers/error'
 
 export function xhr(config: ChiosRequestConfig): ChiosPromise {
   return new Promise((resolve, reject) => {
-    const { url, method = 'GET', data = null, headers, responseType, timeout } = config
+    const {
+      url,
+      method = 'GET',
+      data = null,
+      headers,
+      responseType,
+      timeout,
+      withCredentials
+    } = config
     const request = new XMLHttpRequest()
-
+    // 设置响应数据类型
     if (responseType) {
       request.responseType = responseType
     }
@@ -24,7 +32,10 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
         createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
       )
     }
-
+    // 跨域请求是否携带cookie
+    if (withCredentials) {
+      request.withCredentials = withCredentials
+    }
     // 设置异步请求
     request.open(method.toLocaleUpperCase(), url!, true)
     // 监听xhr状态

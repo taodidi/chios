@@ -25,6 +25,7 @@ export interface ChiosRequestConfig {
   transformRequest?: ChiosTransformer | ChiosTransformer[]
   transformResponse?: ChiosTransformer | ChiosTransformer[]
   cancelToken?: CancelToken
+  withCredentials?: boolean
   [propName: string]: any
 }
 
