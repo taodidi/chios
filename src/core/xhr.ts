@@ -1,6 +1,8 @@
 import { ChiosRequestConfig, ChiosResponse, ChiosPromise, ChiosError } from './../types/index'
 import { parseHeaders } from '../helpers/headers'
 import { createError } from '../helpers/error'
+import { isURLSameOrigin } from '../helpers/url'
+import cookie from '../helpers/cookie'
 
 export function xhr(config: ChiosRequestConfig): ChiosPromise {
   return new Promise((resolve, reject) => {
@@ -11,7 +13,9 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
       headers,
       responseType,
       timeout,
-      withCredentials
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName
     } = config
     const request = new XMLHttpRequest()
     // 设置响应数据类型
@@ -62,6 +66,14 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
       }
       // 处理响应
       handleResponse(response)
+    }
+
+    // 设置token
+    if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+      const xsrfValue = cookie.read(xsrfCookieName)
+      if (xsrfValue && xsrfHeaderName) {
+        headers[xsrfHeaderName] = xsrfValue
+      }
     }
     // 设置请求头
     Object.keys(headers).forEach(key => {

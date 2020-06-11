@@ -5,33 +5,33 @@ import qs from 'qs'
 //
 // import NProgress from 'nprogress'
 
-document.cookie = 'c=d'
+// document.cookie = 'c=d'
 
-// chios.get('/more/get').then(res => {
-//   console.log(res)
-// })
-
-chios
-  .post(
-    'http://127.0.0.1:8088/more/server2',
-    {},
-    {
-      withCredentials: true
-    }
-  )
-  .then(res => {
-    console.log(res)
-  })
-//
-// // const instance = axios.create({
-// //   xsrfCookieName: 'XSRF-TOKEN-D',
-// //   xsrfHeaderName: 'X-XSRF-TOKEN-D'
-// // })
-// //
-// // instance.get('/more/get').then(res => {
+// // chios.get('/more/get').then(res => {
 // //   console.log(res)
 // // })
-// const instance = axios.create()
+
+// chios
+//   .post(
+//     'http://127.0.0.1:8088/more/server2',
+//     {},
+//     {
+//       withCredentials: true
+//     }
+//   )
+//   .then(res => {
+//     console.log(res)
+//   })
+// //
+const instance = chios.create({
+  xsrfCookieName: 'XSRF-TOKEN-D',
+  xsrfHeaderName: 'X-XSRF-TOKEN-D'
+})
+// //
+instance.get('/more/get').then(res => {
+  console.log(res)
+})
+// const instance = chios.create()
 //
 // function calculatePercentage(loaded: number, total: number) {
 //   return Math.floor(loaded * 1.0) / total
@@ -89,7 +89,7 @@ chios
 //   }
 // })
 
-// axios.post('/more/post', {
+// chios.post('/more/post', {
 //   a: 1
 // }, {
 //   auth: {
@@ -100,13 +100,13 @@ chios
 //   console.log(res)
 // })
 
-// axios.get('/more/304').then(res => {
+// chios.get('/more/304').then(res => {
 //   console.log(res)
 // }).catch((e: AxiosError) => {
 //   console.log(e.message)
 // })
 //
-// axios.get('/more/304', {
+// chios.get('/more/304', {
 //   validateStatus(status) {
 //     return status >= 200 && status < 400
 //   }
@@ -116,13 +116,13 @@ chios
 //   console.log(e.message)
 // })
 //
-// axios.get('/more/get', {
+// chios.get('/more/get', {
 //   params: new URLSearchParams('a=b&c=d')
 // }).then(res => {
 //   console.log(res)
 // })
 //
-// axios.get('/more/get', {
+// chios.get('/more/get', {
 //   params: {
 //     a: 1,
 //     b: 2,
@@ -132,7 +132,7 @@ chios
 //   console.log(res)
 // })
 //
-// const instance = axios.create({
+// const instance = chios.create({
 //   paramsSerializer(params) {
 //     return qs.stringify(params, { arrayFormat: 'brackets' })
 //   }
@@ -148,7 +148,7 @@ chios
 //   console.log(res)
 // })
 
-// const instance = axios.create({
+// const instance = chios.create({
 //   baseURL: 'https://img.mukewang.com/'
 // })
 //
@@ -157,21 +157,21 @@ chios
 // instance.get('https://img.mukewang.com/szimg/5becd5ad0001b89306000338-360-202.jpg')
 
 // function getA() {
-//   return axios.get('/more/A')
+//   return chios.get('/more/A')
 // }
 
 // function getB() {
-//   return axios.get('/more/B')
+//   return chios.get('/more/B')
 // }
 
-// axios.all([getA(), getB()]).then(
-//   axios.spread(function(resA, resB) {
+// chios.all([getA(), getB()]).then(
+//   chios.spread(function(resA, resB) {
 //     console.log(resA.data)
 //     console.log(resB.data)
 //   })
 // )
 
-// axios.all([getA(), getB()]).then(([resA, resB]) => {
+// chios.all([getA(), getB()]).then(([resA, resB]) => {
 //   console.log(resA.data)
 //   console.log(resB.data)
 // })
@@ -185,4 +185,4 @@ chios
 //     testString: 'thisIsATest'
 //   }
 // }
-// console.log(axios.getUri(fakeConfig))
+// console.log(chios.getUri(fakeConfig))

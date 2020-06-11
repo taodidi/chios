@@ -1,4 +1,8 @@
 import { isDate, isPlainObject } from './utils'
+interface URLOrigin {
+  protocol: string
+  host: string
+}
 // 编译特殊字符同时保留指定字符
 function encode(str: string): string {
   return encodeURIComponent(str)
@@ -51,4 +55,27 @@ export function buildUrl(url: string, params?: any): string {
   }
 
   return url
+}
+
+// 判断URL是否同源
+export function isURLSameOrigin(requestURL: string): boolean {
+  const parsedOrigin = resolveURL(requestURL)
+  return (
+    parsedOrigin.protocol === currentOrigin.protocol && parsedOrigin.host === currentOrigin.host
+  )
+}
+
+// 创建元素节点
+const elementNode = document.createElement('a')
+// 获取当前域
+const currentOrigin = resolveURL(window.location.href)
+// 解析域
+function resolveURL(url: string): URLOrigin {
+  // 获取协议与主机IP
+  elementNode.setAttribute('href', url)
+  const { protocol, host } = elementNode
+  return {
+    protocol,
+    host
+  }
 }
