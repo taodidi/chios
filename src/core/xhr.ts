@@ -2,6 +2,7 @@ import { ChiosRequestConfig, ChiosResponse, ChiosPromise, ChiosError } from './.
 import { parseHeaders } from '../helpers/headers'
 import { createError } from '../helpers/error'
 import { isURLSameOrigin } from '../helpers/url'
+import { isFormData } from '../helpers/utils'
 import cookie from '../helpers/cookie'
 
 export function xhr(config: ChiosRequestConfig): ChiosPromise {
@@ -13,84 +14,124 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
       headers,
       responseType,
       timeout,
+      cancelToken,
       withCredentials,
       xsrfCookieName,
-      xsrfHeaderName
+      xsrfHeaderName,
+      onDownloadProgress,
+      onUploadProgress
     } = config
+    // 创建xhr对象
     const request = new XMLHttpRequest()
-    // 设置响应数据类型
-    if (responseType) {
-      request.responseType = responseType
-    }
-    // 响应时间
-    if (timeout) {
-      request.timeout = timeout
-    }
-    // 错误处理
-    request.onerror = () => {
-      reject(createError('Network Error', config, null, request))
-    }
-    // 响应超时
-    request.ontimeout = () => {
-      reject(
-        createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
-      )
-    }
-    // 跨域请求是否携带cookie
-    if (withCredentials) {
-      request.withCredentials = withCredentials
-    }
     // 设置异步请求
     request.open(method.toLocaleUpperCase(), url!, true)
-    // 监听xhr状态
-    request.onreadystatechange = () => {
-      if (request.readyState !== 4) {
-        return
-      }
-      if (request.status === 0) {
-        return
-      }
 
-      const data = responseType && responseType === 'text' ? request.responseText : request.response
-      const status = request.status
-      const statusText = request.statusText
-      const headers = parseHeaders(request.getAllResponseHeaders())
-      // 封装返回信息
-      const response: ChiosResponse = {
-        data,
-        status,
-        statusText,
-        headers,
-        config,
-        request
+    // 初始化
+    configureRequest()
+
+    addEvents()
+
+    processHeaders()
+
+    processCancel()
+
+    // request对象配置
+    function configureRequest(): void {
+      // 设置响应数据类型
+      if (responseType) {
+        request.responseType = responseType
       }
-      // 处理响应
-      handleResponse(response)
+      // 响应时间
+      if (timeout) {
+        request.timeout = timeout
+      }
+      // 跨域请求是否携带cookie
+      if (withCredentials) {
+        request.withCredentials = withCredentials
+      }
     }
 
-    // 设置token
-    if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
-      const xsrfValue = cookie.read(xsrfCookieName)
-      if (xsrfValue && xsrfHeaderName) {
-        headers[xsrfHeaderName] = xsrfValue
+    // 事件绑定
+    function addEvents(): void {
+      // 监听xhr状态
+      request.onreadystatechange = () => {
+        if (request.readyState !== 4) {
+          return
+        }
+        if (request.status === 0) {
+          return
+        }
+
+        const data =
+          responseType && responseType === 'text' ? request.responseText : request.response
+        const status = request.status
+        const statusText = request.statusText
+        const headers = parseHeaders(request.getAllResponseHeaders())
+        // 封装返回信息
+        const response: ChiosResponse = {
+          data,
+          status,
+          statusText,
+          headers,
+          config,
+          request
+        }
+        // 处理响应
+        handleResponse(response)
+      }
+      // 错误处理
+      request.onerror = () => {
+        reject(createError('Network Error', config, null, request))
+      }
+
+      // 响应超时
+      request.ontimeout = () => {
+        reject(
+          createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
+        )
+      }
+      // 下载进度配置
+      if (onDownloadProgress) {
+        request.onprogress = onDownloadProgress
+      }
+      // 上传进度配置
+      if (onUploadProgress) {
+        request.upload.onprogress = onUploadProgress
       }
     }
-    // 设置请求头
-    Object.keys(headers).forEach(key => {
-      if (data === null && key.toLowerCase() === 'content-type') {
-        delete headers[key]
-      } else {
-        request.setRequestHeader(key, headers[key])
-      }
-    })
 
-    // 取消发送请求
-    if (config.cancelToken) {
-      config.cancelToken.promise.then(reason => {
-        request.abort()
-        reject(reason)
+    function processHeaders(): void {
+      // 如果是FormData则删除content-type
+      if (isFormData(data)) {
+        delete headers['Content-Type']
+      }
+      // 设置token
+      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+        const xsrfValue = cookie.read(xsrfCookieName)
+        if (xsrfValue && xsrfHeaderName) {
+          headers[xsrfHeaderName] = xsrfValue
+        }
+      }
+      // 设置请求头
+      Object.keys(headers).forEach(key => {
+        if (data === null && key.toLowerCase() === 'content-type') {
+          delete headers[key]
+        } else {
+          request.setRequestHeader(key, headers[key])
+        }
       })
     }
+
+    function processCancel(): void {
+      // 取消发送请求
+      if (cancelToken) {
+        cancelToken.promise.then(reason => {
+          request.abort()
+          reject(reason)
+        })
+      }
+    }
+
     // 发送数据
     request.send(data)
 
