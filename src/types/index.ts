@@ -28,8 +28,12 @@ export interface ChiosRequestConfig {
   withCredentials?: boolean
   xsrfCookieName?: string
   xsrfHeaderName?: string
+  auth?: ChiosBasicCredentials
   onDownloadProgress?: (e: ProgressEvent) => void
   onUploadProgress?: (e: ProgressEvent) => void
+  validateStatus?: (status: number) => boolean
+  paramsSerializer?: (params: any) => string
+  baseURL?: string
   [propName: string]: any
 }
 
@@ -144,4 +148,9 @@ export interface Cancel {
 
 export interface CancelStatic {
   new (message: string): Cancel
+}
+
+export interface ChiosBasicCredentials {
+  username: string
+  password: string
 }

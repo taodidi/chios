@@ -19,7 +19,9 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
       xsrfCookieName,
       xsrfHeaderName,
       onDownloadProgress,
-      onUploadProgress
+      onUploadProgress,
+      auth,
+      validateStatus
     } = config
     // 创建xhr对象
     const request = new XMLHttpRequest()
@@ -105,6 +107,9 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
       if (isFormData(data)) {
         delete headers['Content-Type']
       }
+      if (auth) {
+        headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
+      }
       // 设置token
       if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
         const xsrfValue = cookie.read(xsrfCookieName)
@@ -137,7 +142,7 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
 
     // 处理响应结果
     function handleResponse(response: ChiosResponse): void {
-      if (request.status >= 200 && request.status < 300) {
+      if (!validateStatus || validateStatus(request.status)) {
         // 封装
         resolve(response)
       } else {

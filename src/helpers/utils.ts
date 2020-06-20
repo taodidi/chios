@@ -8,11 +8,14 @@ export function isPlainObject(val: any): val is Object {
   return toString.call(val) === '[object Object]'
 }
 
-// FormData
+//is FormData
 export function isFormData(val: any): val is FormData {
   return typeof val !== 'undefined' && val instanceof FormData
 }
-
+//is URLSearchParams
+export function isURLSearchParams(val: any): val is URLSearchParams {
+  return typeof val !== 'undefined' && val instanceof URLSearchParams
+}
 // 对象扩展
 export function extend<T, U>(to: T, from: U): T & U {
   for (const key in from) {

@@ -2,6 +2,7 @@ import { ChiosRequestConfig, ChiosResponse, ChiosPromise } from '../types/index'
 import { xhr } from '../core/xhr'
 import { buildUrl } from '../helpers/url'
 import { flattenHeaders } from '../helpers/headers'
+import { isAbsoluteURL, combineURL } from '../helpers/url'
 import transform from './transform'
 
 export default function dispatchRequest(config: ChiosRequestConfig): ChiosPromise {
@@ -20,8 +21,11 @@ function processConfig(config: ChiosRequestConfig): void {
 
 // 编译URL
 function transformUrl(config: ChiosRequestConfig): string {
-  const { url, params } = config
-  return buildUrl(url!, params)
+  let { baseURL, url, params, paramsSerializer } = config
+  if (baseURL && !isAbsoluteURL(url!)) {
+    url = combineURL(baseURL, url)
+  }
+  return buildUrl(url!, params, paramsSerializer)
 }
 
 // 处理响应数据

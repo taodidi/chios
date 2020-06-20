@@ -1,4 +1,4 @@
-import { isDate, isPlainObject } from './utils'
+import { isDate, isPlainObject, isURLSearchParams } from './utils'
 interface URLOrigin {
   protocol: string
   host: string
@@ -15,36 +15,50 @@ function encode(str: string): string {
     .replace(/%5D/gi, ']')
 }
 // 参数绑定
-export function buildUrl(url: string, params?: any): string {
+export function buildUrl(
+  url: string,
+  params?: any,
+  paramsSerializer?: (param: any) => string
+): string {
   if (!params) {
     return url
   }
-  const additions: string[] = []
-  Object.keys(params).forEach(key => {
-    const val = params[key]
-    if (val === null || typeof val === 'undefined') {
-      return
-    }
-    // 将参数值统一为数组处理
-    let values: any[] = []
-    if (Array.isArray(val)) {
-      key += '[]'
-      values = val
-    } else {
-      values = [val]
-    }
-    values.forEach(val => {
-      if (isDate(val)) {
-        val = val.toISOString()
-      }
-      if (isPlainObject(val)) {
-        val = JSON.stringify(val)
-      }
-      additions.push(`${encode(key)}=${encode(val)}`)
-    })
-  })
 
-  const serializedParams = additions.join('&')
+  let serializedParams
+
+  // 序列化规则
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params)
+  } else if (isURLSearchParams(params)) {
+    serializedParams = params.toString()
+  } else {
+    const additions: string[] = []
+    Object.keys(params).forEach(key => {
+      const val = params[key]
+      if (val === null || typeof val === 'undefined') {
+        return
+      }
+      // 将参数值统一为数组处理
+      let values: any[] = []
+      if (Array.isArray(val)) {
+        key += '[]'
+        values = val
+      } else {
+        values = [val]
+      }
+      values.forEach(val => {
+        if (isDate(val)) {
+          val = val.toISOString()
+        }
+        if (isPlainObject(val)) {
+          val = JSON.stringify(val)
+        }
+        additions.push(`${encode(key)}=${encode(val)}`)
+      })
+    })
+    serializedParams = additions.join('&')
+  }
+
   if (serializedParams) {
     const markIndex = url.indexOf('#')
     if (markIndex !== -1) {
@@ -57,6 +71,15 @@ export function buildUrl(url: string, params?: any): string {
   return url
 }
 
+// 判断是否为绝对地址
+export function isAbsoluteURL(url: string): boolean {
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url)
+}
+
+// 合并地址
+export function combineURL(baseURL: string, relativeURL?: string): string {
+  return relativeURL ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '') : baseURL
+}
 // 判断URL是否同源
 export function isURLSameOrigin(requestURL: string): boolean {
   const parsedOrigin = resolveURL(requestURL)
