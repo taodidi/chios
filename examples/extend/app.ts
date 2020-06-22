@@ -1,6 +1,6 @@
-import axios from '../../src/index'
+import chios from '../../src/index'
 
-// axios({
+// chios({
 //   url: '/extend/post',
 //   method: 'post',
 //   data: {
@@ -8,7 +8,7 @@ import axios from '../../src/index'
 //   }
 // })
 
-// axios.request({
+// chios.request({
 //   url: '/extend/post',
 //   method: 'post',
 //   data: {
@@ -16,21 +16,21 @@ import axios from '../../src/index'
 //   }
 // })
 
-// axios.get('/extend/get')
+// chios.get('/extend/get')
 // //
-// axios.options('/extend/options')
+// chios.options('/extend/options')
 // //
-// axios.delete('/extend/delete')
+// chios.delete('/extend/delete')
 
-// axios.head('/extend/head')
+// chios.head('/extend/head')
 
-// axios.post('/extend/post', { msg: 'post' })
+// chios.post('/extend/post', { msg: 'post' })
 
-// axios.put('/extend/put', { msg: 'put' })
+// chios.put('/extend/put', { msg: 'put' })
 
-// axios.patch('/extend/patch', { msg: 'patch' })
+// chios.patch('/extend/patch', { msg: 'patch' })
 
-// axios({
+// chios({
 //   url: '/extend/post',
 //   method: 'post',
 //   data: {
@@ -38,7 +38,7 @@ import axios from '../../src/index'
 //   }
 // })
 
-// axios('/extend/post', {
+// chios('/extend/post', {
 //   method: 'post',
 //   data: {
 //     msg: 'hello'
@@ -57,7 +57,7 @@ interface User {
 }
 
 function getUser<T>() {
-  return axios<ResponseData<T>>('/extend/user')
+  return chios<ResponseData<T>>('/extend/user')
     .then(res => res.data)
     .catch(err => console.error(err))
 }

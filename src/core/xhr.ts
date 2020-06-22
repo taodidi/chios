@@ -9,9 +9,9 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
   return new Promise((resolve, reject) => {
     const {
       url,
-      method = 'GET',
+      method,
       data = null,
-      headers,
+      headers = {},
       responseType,
       timeout,
       cancelToken,
@@ -26,7 +26,7 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
     // 创建xhr对象
     const request = new XMLHttpRequest()
     // 设置异步请求
-    request.open(method.toLocaleUpperCase(), url!, true)
+    request.open(method!.toLocaleUpperCase(), url!, true)
 
     // 初始化
     configureRequest()
@@ -65,7 +65,7 @@ export function xhr(config: ChiosRequestConfig): ChiosPromise {
         }
 
         const data =
-          responseType && responseType === 'text' ? request.responseText : request.response
+          responseType && responseType !== 'text' ? request.response : request.responseText
         const status = request.status
         const statusText = request.statusText
         const headers = parseHeaders(request.getAllResponseHeaders())
