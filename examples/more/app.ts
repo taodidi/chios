@@ -170,41 +170,41 @@ import NProgress from 'nprogress'
 //     console.log(res)
 //   })
 
-const instance = chios.create({
-  baseURL: 'https://img.mukewang.com/'
-})
-
-instance.get('5cc01a7b0001a33718720632.jpg')
-
-instance.get('https://img.mukewang.com/szimg/5becd5ad0001b89306000338-360-202.jpg')
-
-// function getA() {
-//   return chios.get('/more/A')
-// }
-
-// function getB() {
-//   return chios.get('/more/B')
-// }
-
-// chios.all([getA(), getB()]).then(
-//   chios.spread(function(resA, resB) {
-//     console.log(resA.data)
-//     console.log(resB.data)
-//   })
-// )
-
-// chios.all([getA(), getB()]).then(([resA, resB]) => {
-//   console.log(resA.data)
-//   console.log(resB.data)
+// const instance = chios.create({
+//   baseURL: 'https://img.mukewang.com/'
 // })
 
-// const fakeConfig = {
-//   baseURL: 'https://www.baidu.com/',
-//   url: '/user/12345',
-//   params: {
-//     idClient: 1,
-//     idTest: 2,
-//     testString: 'thisIsATest'
-//   }
-// }
-// console.log(chios.getUri(fakeConfig))
+// instance.get('5cc01a7b0001a33718720632.jpg')
+
+// instance.get('https://img.mukewang.com/szimg/5becd5ad0001b89306000338-360-202.jpg')
+
+function getA() {
+  return chios.get('/more/A')
+}
+
+function getB() {
+  return chios.get('/more/B')
+}
+
+chios.all([getA(), getB()]).then(
+  chios.spread(function(resA, resB) {
+    console.log(resA.data)
+    console.log(resB.data)
+  })
+)
+
+chios.all([getA(), getB()]).then(([resA, resB]) => {
+  console.log(resA.data)
+  console.log(resB.data)
+})
+
+const fakeConfig = {
+  baseURL: 'https://www.baidu.com/',
+  url: '/user/12345',
+  params: {
+    idClient: 1,
+    idTest: 2,
+    testString: 'thisIsATest'
+  }
+}
+console.log(chios.getUri(fakeConfig))

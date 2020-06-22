@@ -80,6 +80,8 @@ export interface Chios {
   put<T = any>(url: string, data?: any, config?: ChiosRequestConfig): ChiosPromise<T>
 
   patch<T = any>(url: string, data?: any, config?: ChiosRequestConfig): ChiosPromise<T>
+
+  getUri(config?: ChiosRequestConfig): string
 }
 
 export interface ChiosInstance extends Chios {
@@ -88,11 +90,21 @@ export interface ChiosInstance extends Chios {
   <T = any>(url: string, config?: ChiosRequestConfig): ChiosPromise<T>
 }
 
+export interface ChiosClassStatic {
+  new (config: ChiosRequestConfig): Chios
+}
+
 export interface ChiosStatic extends ChiosInstance {
   create(config?: ChiosRequestConfig): ChiosInstance
   CancelToken: CancelTokenStatic
   Cancel: CancelStatic
   isCancel: (value: any) => boolean
+
+  all<T>(promises: Array<T | Promise<T>>): Promise<T[]>
+
+  spread<T, R>(callback: (...args: T[]) => R): (arr: T[]) => R
+
+  Axios: ChiosClassStatic
 }
 
 // 拦截器管理类接口

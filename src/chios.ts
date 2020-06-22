@@ -19,6 +19,16 @@ chios.CancelToken = CancelToken
 chios.Cancel = Cancel
 chios.isCancel = isCancel
 
+chios.all = function all(promises) {
+  return Promise.all(promises)
+}
+
+chios.spread = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr)
+  }
+}
+
 chios.create = function create(config) {
   return createInstance(mergeConfig(defaults, config))
 }

@@ -8,9 +8,17 @@ import transform from './transform'
 export default function dispatchRequest(config: ChiosRequestConfig): ChiosPromise {
   throwIfCancellationRequested(config)
   processConfig(config)
-  return xhr(config).then(res => {
-    return transformResponseData(res)
-  })
+  return xhr(config).then(
+    res => {
+      return transformResponseData(res)
+    },
+    e => {
+      if (e && e.response) {
+        e.response = transformResponseData(e.response)
+      }
+      return Promise.reject(e)
+    }
+  )
 }
 
 function processConfig(config: ChiosRequestConfig): void {
@@ -20,7 +28,7 @@ function processConfig(config: ChiosRequestConfig): void {
 }
 
 // 编译URL
-function transformUrl(config: ChiosRequestConfig): string {
+export function transformUrl(config: ChiosRequestConfig): string {
   let { baseURL, url, params, paramsSerializer } = config
   if (baseURL && !isAbsoluteURL(url!)) {
     url = combineURL(baseURL, url)

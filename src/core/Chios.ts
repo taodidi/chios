@@ -1,4 +1,4 @@
-import dispatchRequest from './dispatchRequest'
+import dispatchRequest, { transformUrl } from './dispatchRequest'
 import {
   ChiosRequestConfig,
   ChiosPromise,
@@ -43,6 +43,8 @@ export default class Chios {
 
     // 合并config对象
     config = mergeConfig(this.defaults, config)
+    // 将方法转换为小写
+    config.method = config.method.toLowerCase()
     // 拦截器执行链条
     const chain: Array<PromiseChain<any>> = [
       {
@@ -94,6 +96,11 @@ export default class Chios {
 
   patch(url: string, data?: any, config?: ChiosRequestConfig): ChiosPromise {
     return this._sendRequestWithData('patch', url, data, config)
+  }
+
+  getUri(config?: ChiosRequestConfig): string {
+    config = mergeConfig(this.defaults, config)
+    return transformUrl(config)
   }
   // 发送无数据请求
   _sendRequestWithoutData(method: Method, url: string, config?: ChiosRequestConfig): ChiosPromise {
