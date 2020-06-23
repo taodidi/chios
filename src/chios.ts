@@ -33,4 +33,6 @@ chios.create = function create(config) {
   return createInstance(mergeConfig(defaults, config))
 }
 
+chios.Chios = Chios
+
 export default chios

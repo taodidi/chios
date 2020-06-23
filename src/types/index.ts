@@ -104,7 +104,7 @@ export interface ChiosStatic extends ChiosInstance {
 
   spread<T, R>(callback: (...args: T[]) => R): (arr: T[]) => R
 
-  Axios: ChiosClassStatic
+  Chios: ChiosClassStatic
 }
 
 // 拦截器管理类接口
