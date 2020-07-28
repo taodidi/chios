@@ -95,7 +95,7 @@ export interface ChiosClassStatic {
 }
 
 export interface ChiosStatic extends ChiosInstance {
-  create(config?: ChiosRequestConfig): ChiosInstance
+  create(config?: ChiosRequestConfig): ChiosStatic
   CancelToken: CancelTokenStatic
   Cancel: CancelStatic
   isCancel: (value: any) => boolean
